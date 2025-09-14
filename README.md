@@ -1,61 +1,70 @@
-cd C:\Users\mriga\Nebula\sage-project
-sage-env\Scripts\activate
+# Self-Adaptive GPU Ecosystem for Anomaly Detection
 
-python launch_nodes.py
+This project simulates a distributed GPU ecosystem and uses a Graph Neural Network (GNN) to detect anomalies in real-time. It includes a monitoring service, a control plane for intelligent job scheduling, and a telemetry dashboard for visualization.
 
-Wait for the health checks (“✓ Node {port} is healthy”) before proceeding.
+## Key Features
 
-Leave this terminal open! The nodes are now running and listening for jobs.
+- **GPU Workload Simulation**: Simulates multiple GPU nodes, each with its own workload and telemetry data (utilization, temperature, power, etc.).
+- **Real-time Monitoring**: A monitoring service polls telemetry data from all nodes, detects anomalies, and logs the data.
+- **GNN-based Anomaly Detection**: A Graph Neural Network model is used to identify complex anomalous patterns from the collected telemetry data.
+- **Intelligent Control Plane**: A control plane (scheduler) receives job requests and intelligently assigns them to the healthiest and most available GPU nodes based on a scoring policy.
+- **Dynamic Node Management**: Nodes can be added, removed, or drained dynamically via the control plane's API.
+- **Telemetry Dashboard**: A Streamlit-based dashboard visualizes the real-time status of the GPU cluster.
+- **Automated Setup**: A single script (`run_all.py`) launches all the components of the ecosystem.
 
-Step 2: Open a New Terminal for the Job Scheduler/Control Plane
-Open a second terminal, activate your environment again, and cd to your project folder:
+## Project Structure
 
-Step 3: Run the Control Plane Demo (Scheduler/Batch Submission)
-Launch your job scheduling/testing script (often called control_plane.py or similar):
+```
+.
+├── gnn_anomaly_detector.py  # GNN model definition and training
+├── monitoring_service.py    # Collects telemetry and detects anomalies
+├── control_plane.py         # Schedules jobs and manages nodes
+├── workload_simulator.py    # Simulates GPU workloads
+├── gpu_node_service.py      # Simulates a single GPU node
+├── telemetry_dashboard.py   # Streamlit dashboard for visualization
+├── run_all.py               # Main script to launch the entire ecosystem
+├── requirements.txt         # Python dependencies
+└── ...
+```
 
-python control_plane.py
-This will:
-Discover all healthy nodes
+## Getting Started
 
-Submit a batch of jobs according to your scenarios
+### Prerequisites
 
-Print job assignment, job success/failure, and live cluster metrics (utilization/job counts)
+- Python 3.8+
+- An active virtual environment is recommended.
 
-Run the cluster monitoring visualizer (bar charts in terminal)
+### Installation
 
-Step 4: Observe Functionality
-In the second terminal, watch console outputs as jobs are scheduled and the cluster status updates.
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/evenindividual04/Self-Adaptive-GPU-Ecosystem.git
+    cd Self-Adaptive-GPU-Ecosystem
+    ```
 
-In the first terminal, watch the launcher and node logs—see job executions and utilization changes.
+2.  **Install the required dependencies:**
+    ```bash
+    pip install -r requirements.txt
+    ```
 
+### Running the Ecosystem
 
-Step 5: (Optional) Interact with Node APIs Directly
-Open a browser and visit FastAPI docs of any running node (for manual testing):
-http://localhost:8000/docs
-http://localhost:8001/docs
-http://localhost:8002/docs
-http://localhost:8003/docs
+The entire ecosystem can be launched using the `run_all.py` script. This will start the GPU node simulators, the control plane, the monitoring service, and the telemetry dashboard.
 
+```bash
+python run_all.py
+```
 
-This lets you submit jobs, check metrics, and health interactively.
+After running the script, you can access the following services:
 
-Step 6: Stopping the Cluster
-When you’re done, return to the first (launcher) terminal and press Enter to cleanly shut down all running nodes.
+-   **Control Plane API**: `http://127.0.0.1:9000/docs`
+-   **Monitoring Service API**: `http://127.0.0.1:9100/cluster-stats`
+-   **Telemetry Dashboard**: `http://localhost:8501`
 
+## How It Works
 
-
-To kill processes at a port
-
-Even Quicker - Windows Command Line:
-You can also just run these commands directly in your terminal:
-cmdnetstat -ano | findstr :8000
-taskkill /PID [PID_NUMBER] /F
-
-netstat -ano | findstr :8001  
-taskkill /PID [PID_NUMBER] /F
-
-netstat -ano | findstr :8002
-taskkill /PID [PID_NUMBER] /F
-
-netstat -ano | findstr :8003
-taskkill /PID [PID_NUMBER] /F
+1.  **GPU Nodes (`gpu_node_service.py`)**: Multiple instances of this service are run to simulate a cluster of GPUs. Each node exposes endpoints to get metrics and submit jobs.
+2.  **Monitoring Service (`monitoring_service.py`)**: This service periodically polls the GPU nodes for their telemetry data. It uses the GNN model to detect anomalies and logs the data.
+3.  **Control Plane (`control_plane.py`)**: This is the "brain" of the ecosystem. It receives job requests and decides which GPU node to send them to. It considers factors like node utilization, health, and reliability.
+4.  **Job Submitter (`submit_jobs.py`)**: This script (launched by `run_all.py`) continuously sends simulated jobs to the control plane, creating a realistic workload.
+5.  **Dashboard (`telemetry_dashboard.py`)**: The dashboard reads the data logged by the monitoring service and provides a real-time view of the cluster's health and performance.
