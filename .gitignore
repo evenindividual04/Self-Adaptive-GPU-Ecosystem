@@ -1,0 +1,44 @@
+# Environments
+.venv/
+sage-env/
+
+# Python cache
+__pycache__/
+*.pyc
+*.cpython-313.pyc
+
+# Data and logs
+*.csv
+*.db
+*.json
+*.jsonl
+data_logs/
+logs/
+logs_old/
+datasets/
+wandb/
+runs/
+
+# OS / IDE
+.DS_Store
+.qodo/
+
+# Compiled files
+sc_thermal
+
+# Generated images
+*.png
+
+# Config
+otel-collector-config.yaml
+
+# Exclude specific data files by name
+drained_nodes.json
+jobs_log.json
+threshold.json
+tmp_val_scores.json
+training_data_2_cap.json
+training_data_2.json
+training_data_2o.json
+training_data_2r.json
+training_data.jsonexternal/
